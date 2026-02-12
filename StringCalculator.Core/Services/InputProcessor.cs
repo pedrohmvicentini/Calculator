@@ -19,7 +19,15 @@ namespace StringCalculator.Core.Services
                 var newlineIndex = input.IndexOf('\n');
                 var delimiter = input.Substring(2, newlineIndex - 2);
 
-                delimiters.Add(delimiter);
+                if (delimiter.StartsWith("[") && delimiter.EndsWith("]"))
+                {
+                    var itemDelimiter = delimiter[1..^1];
+                    delimiters.Add(delimiter);
+                }
+                else
+                {
+                    delimiters.Add(delimiter);
+                }
 
                 input = input[(newlineIndex + 1)..];
             }
