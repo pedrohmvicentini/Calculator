@@ -27,16 +27,31 @@ namespace StringCalculator.Tests
         }
 
         [Fact]
-        public void ExtractTokens_ShouldReturnSingleValue_WhenNoCommaExists()
+        public void ExtractTokens_ShouldSplitByNewLine()
         {
-            var result = _processor.ExtractTokens("5");
+            var result = _processor.ExtractTokens("1\\n2\\n3");
 
-            Assert.Single(result);
-            Assert.Equal("5", result.First());
+            Assert.Equal(new[] { "1", "2", "3" }, result);
         }
 
         [Fact]
-        public void ExtractTokens_ShouldReturnEmptyToken_WhenTrailingComma()
+        public void ExtractTokens_ShouldSplitByCommaAndNewLine()
+        {
+            var result = _processor.ExtractTokens("1\\n2,3");
+
+            Assert.Equal(new[] { "1", "2", "3" }, result);
+        }
+
+        [Fact]
+        public void ExtractTokens_ShouldReturnEmptyToken_WhenConsecutiveDelimiters()
+        {
+            var result = _processor.ExtractTokens("1,\\n2");
+
+            Assert.Equal(new[] { "1", "", "2" }, result);
+        }
+
+        [Fact]
+        public void ExtractTokens_ShouldReturnEmptyToken_WhenTrailingDelimiter()
         {
             var result = _processor.ExtractTokens("1,2,");
 
@@ -44,7 +59,7 @@ namespace StringCalculator.Tests
         }
 
         [Fact]
-        public void ExtractTokens_ShouldReturnEmptyToken_WhenLeadingComma()
+        public void ExtractTokens_ShouldReturnEmptyToken_WhenLeadingDelimiter()
         {
             var result = _processor.ExtractTokens(",1,2");
 
@@ -52,11 +67,11 @@ namespace StringCalculator.Tests
         }
 
         [Fact]
-        public void ExtractTokens_ShouldReturnEmptyToken_WhenConsecutiveCommas()
+        public void ExtractTokens_ShouldReturnSingleToken_WhenNoDelimiterExists()
         {
-            var result = _processor.ExtractTokens("1,,2");
+            var result = _processor.ExtractTokens("5");
 
-            Assert.Equal(new[] { "1", "", "2" }, result);
+            Assert.Equal(new[] { "5" }, result);
         }
     }
 }
