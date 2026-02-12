@@ -7,6 +7,7 @@ ServiceCollection services = new();
 
 CalculatorOptions options = new()
 {
+    DenyNegatives = true,
     LimitToTwoNumbers = false
 };
 

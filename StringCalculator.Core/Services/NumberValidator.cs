@@ -10,6 +10,14 @@ namespace StringCalculator.Core.Services
         {
             if (options.LimitToTwoNumbers && numbers.Count > 2)
                 throw new TooManyNumbersException();
+
+            if (options.DenyNegatives)
+            {
+                var negatives = numbers.Where(x => x < 0).ToList();
+
+                if (negatives.Count != 0)
+                    throw new NegativeNumbersException(negatives);
+            }
         }
     }
 }
