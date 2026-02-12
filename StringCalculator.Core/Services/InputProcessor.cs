@@ -16,20 +16,22 @@ namespace StringCalculator.Core.Services
 
             if (input.StartsWith("//"))
             {
-                var newlineIndex = input.IndexOf('\n');
-                var delimiter = input.Substring(2, newlineIndex - 2);
+                var delimiterSectionEnd = input.IndexOf('\n');
+                var delimiterSection = input.Substring(2, delimiterSectionEnd - 2);
 
-                if (delimiter.StartsWith("[") && delimiter.EndsWith("]"))
+                var matches = Regex.Matches(delimiterSection, @"\[(.*?)\]");
+
+                if (matches.Count > 0)
                 {
-                    var itemDelimiter = delimiter[1..^1];
-                    delimiters.Add(delimiter);
+                    foreach (Match match in matches)
+                        delimiters.Add(match.Groups[1].Value);
                 }
                 else
                 {
-                    delimiters.Add(delimiter);
+                    delimiters.Add(delimiterSection);
                 }
 
-                input = input[(newlineIndex + 1)..];
+                input = input[(delimiterSectionEnd + 1)..];
             }
 
             var pattern = string.Join("|", delimiters.Select(Regex.Escape));

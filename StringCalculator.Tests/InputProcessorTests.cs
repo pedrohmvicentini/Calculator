@@ -6,44 +6,80 @@ namespace StringCalculator.Tests
     {
         private readonly InputProcessor _processor = new();
 
-        [Fact]
-        public void ExtractTokens_ShouldSupportMultiCharacterDelimiter()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public void ExtractTokens_ShouldReturnZero_WhenInputIsNullOrWhitespace(string input)
         {
-            var result = _processor.ExtractTokens("//[***]\\n11***22***33");
+            var result = _processor.ExtractTokens(input);
 
-            Assert.Equal(new[] { "11", "22", "33" }, result);
+            Assert.Single(result);
+            Assert.Equal("0", result.First());
         }
 
         [Fact]
-        public void ExtractTokens_ShouldSupportSingleCharacterDelimiter()
-        {
-            var result = _processor.ExtractTokens("//#\n2#5");
-
-            Assert.Equal(new[] { "2", "5" }, result);
-        }
-
-        [Fact]
-        public void ExtractTokens_ShouldStillSupportComma()
+        public void ExtractTokens_ShouldSplitByComma()
         {
             var result = _processor.ExtractTokens("1,2,3");
 
-            Assert.Equal(new[] { "1", "2", "3" }, result);
+            Assert.Equal(["1", "2", "3"], result);
         }
 
         [Fact]
-        public void ExtractTokens_ShouldStillSupportNewLine()
+        public void ExtractTokens_ShouldSplitByNewLine()
         {
-            var result = _processor.ExtractTokens("1\\n2,3");
+            var result = _processor.ExtractTokens("1\\n2\\n3");
 
-            Assert.Equal(new[] { "1", "2", "3" }, result);
+            Assert.Equal(["1", "2", "3"], result);
         }
 
         [Fact]
-        public void ExtractTokens_ShouldSupportCustomAndDefaultTogether()
+        public void ExtractTokens_ShouldSplitByCommaAndNewLine()
         {
-            var result = _processor.ExtractTokens("//[***]\\n1***2,3");
+            var result = _processor.ExtractTokens("1,2\\n3");
 
-            Assert.Equal(new[] { "1", "2", "3" }, result);
+            Assert.Equal(["1", "2", "3"], result);
+        }
+
+        [Fact]
+        public void ExtractTokens_ShouldSupportSingleCustomDelimiter()
+        {
+            var result = _processor.ExtractTokens("//;\n1;2;3");
+
+            Assert.Equal(["1", "2", "3"], result);
+        }
+
+        [Fact]
+        public void ExtractTokens_ShouldSupportMultiCharacterCustomDelimiter()
+        {
+            var result = _processor.ExtractTokens("//[***]\n1***2***3");
+
+            Assert.Equal(["1", "2", "3"], result);
+        }
+
+        [Fact]
+        public void ExtractTokens_ShouldSupportMultipleCustomDelimiters()
+        {
+            var result = _processor.ExtractTokens("//[*][%]\n1*2%3");
+
+            Assert.Equal(["1", "2", "3"], result);
+        }
+
+        [Fact]
+        public void ExtractTokens_ShouldSupportMultipleMultiCharacterDelimiters()
+        {
+            var result = _processor.ExtractTokens("//[***][%%]\n1***2%%3");
+
+            Assert.Equal(["1", "2", "3"], result);
+        }
+
+        [Fact]
+        public void ExtractTokens_ShouldHandleSpecialRegexCharactersInDelimiter()
+        {
+            var result = _processor.ExtractTokens("//[.]\n1.2.3");
+
+            Assert.Equal(["1", "2", "3"], result);
         }
     }
 }
