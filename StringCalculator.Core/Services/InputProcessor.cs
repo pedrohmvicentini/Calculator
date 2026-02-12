@@ -14,6 +14,16 @@ namespace StringCalculator.Core.Services
 
             var delimiters = new List<string>(DefaultDelimiters);
 
+            if (input.StartsWith("//"))
+            {
+                var newlineIndex = input.IndexOf('\n');
+                var delimiter = input.Substring(2, newlineIndex - 2);
+
+                delimiters.Add(delimiter);
+
+                input = input[(newlineIndex + 1)..];
+            }
+
             var pattern = string.Join("|", delimiters.Select(Regex.Escape));
 
             return Regex.Split(input, pattern);
