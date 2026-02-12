@@ -1,9 +1,16 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using StringCalculator.Core.Configuration;
 using StringCalculator.Core.Interfaces;
 using StringCalculator.Core.Services;
 
 ServiceCollection services = new();
 
+CalculatorOptions options = new()
+{
+    LimitToTwoNumbers = false
+};
+
+services.AddSingleton(options);
 services.AddSingleton<IInputProcessor, InputProcessor>();
 services.AddSingleton<INumberParser, NumberParser>();
 services.AddSingleton<INumberValidator, NumberValidator>();

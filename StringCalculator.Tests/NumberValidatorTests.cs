@@ -1,50 +1,55 @@
-﻿using StringCalculator.Core.Exceptions;
+﻿using StringCalculator.Core.Configuration;
+using StringCalculator.Core.Exceptions;
 using StringCalculator.Core.Services;
 
 namespace StringCalculator.Tests
 {
     public class NumberValidatorTests
     {
-        private readonly NumberValidator _validator = new();
-
         [Fact]
-        public void Validate_ShouldNotThrow_WhenNoNumbers()
+        public void Validate_ShouldNotThrow_WhenLimitDisabled_AndMoreThanTwoNumbers()
         {
-            var numbers = new List<int>();
+            var options = new CalculatorOptions
+            {
+                LimitToTwoNumbers = false
+            };
 
-            _validator.Validate(numbers);
+            var validator = new NumberValidator(options);
+            var numbers = new List<int> { 1, 2, 3, 4 };
+
+            validator.Validate(numbers);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(2)]
+        public void Validate_ShouldNotThrow_WhenLimitEnabled_AndTwoOrLessNumbers(int count)
+        {
+            var options = new CalculatorOptions
+            {
+                LimitToTwoNumbers = true
+            };
+
+            var validator = new NumberValidator(options);
+            var numbers = Enumerable.Repeat(1, count).ToList();
+
+            validator.Validate(numbers);
         }
 
         [Fact]
-        public void Validate_ShouldNotThrow_WhenOneNumber()
+        public void Validate_ShouldThrow_WhenLimitEnabled_AndMoreThanTwoNumbers()
         {
-            var numbers = new List<int> { 1 };
+            var options = new CalculatorOptions
+            {
+                LimitToTwoNumbers = true
+            };
 
-            _validator.Validate(numbers);
-        }
-
-        [Fact]
-        public void Validate_ShouldNotThrow_WhenTwoNumbers()
-        {
-            var numbers = new List<int> { 1, 2 };
-
-            _validator.Validate(numbers);
-        }
-
-        [Fact]
-        public void Validate_ShouldThrow_WhenMoreThanTwoNumbers()
-        {
+            var validator = new NumberValidator(options);
             var numbers = new List<int> { 1, 2, 3 };
 
-            Assert.Throws<TooManyNumbersException>(() => _validator.Validate(numbers));
-        }
-
-        [Fact]
-        public void Validate_ShouldThrow_WhenManyNumbers()
-        {
-            var numbers = new List<int> { 1, 2, 3, 4, 5 };
-
-            Assert.Throws<TooManyNumbersException>(() => _validator.Validate(numbers));
+            Assert.Throws<TooManyNumbersException>(() =>
+                validator.Validate(numbers));
         }
     }
 }
