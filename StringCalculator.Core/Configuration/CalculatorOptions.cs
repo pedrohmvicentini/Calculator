@@ -2,7 +2,8 @@
 {
     public class CalculatorOptions
     {
-        public bool DenyNegatives { get; init; } = true;
         public bool LimitToTwoNumbers { get; init; } = false;
+        public bool DenyNegatives { get; init; } = true;
+        public int UpperBound { get; init; } = 1000;
     }
 }

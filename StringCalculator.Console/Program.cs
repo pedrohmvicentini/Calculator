@@ -7,8 +7,9 @@ ServiceCollection services = new();
 
 CalculatorOptions options = new()
 {
+    LimitToTwoNumbers = true,
     DenyNegatives = true,
-    LimitToTwoNumbers = false
+    UpperBound = 1000
 };
 
 services.AddSingleton(options);

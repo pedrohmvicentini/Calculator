@@ -1,14 +1,21 @@
-﻿using StringCalculator.Core.Interfaces;
+﻿using StringCalculator.Core.Configuration;
+using StringCalculator.Core.Interfaces;
 
 namespace StringCalculator.Core.Services
 {
-    public class NumberParser() : INumberParser
+    public class NumberParser(CalculatorOptions options) : INumberParser
     {
         public IEnumerable<int> Parse(IEnumerable<string> tokens)
         {
             foreach (var token in tokens)
             {
                 if (!int.TryParse(token, out var number))
+                {
+                    yield return 0;
+                    continue;
+                }
+
+                if (number > options.UpperBound)
                 {
                     yield return 0;
                     continue;
